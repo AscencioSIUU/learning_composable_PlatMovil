@@ -20,50 +20,13 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.toMutableStateList
 import androidx.lifecycle.ViewModel
+import androidx.compose.material3.Checkbox
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
 
-class WellnessViewModel : ViewModel() {
-    private val _tasks = getWellnessTasks().toMutableStateList()
-    val tasks: List<WellnessTask>
-        get() = _tasks
-
-    fun remove(item: WellnessTask) {
-        _tasks.remove(item)
-    }
-}
-
-private fun getWellnessTasks() = List(30) { i -> WellnessTask(i, "Task # $i") }
-
-class WellnessTask(
-    val id: Int,
-    val label: String,
-    initialChecked: Boolean = false
-) {
-    var checked by mutableStateOf(initialChecked)
-}
-
-@Composable
-fun WellnessTasksList(
-    list: List<WellnessTask>,
-    onCheckedTask: (WellnessTask, Boolean) -> Unit,
-    onCloseTask: (WellnessTask) -> Unit,
-    modifier: Modifier = Modifier
-) {
-    LazyColumn(
-        modifier = modifier
-    ) {
-        items(
-            items = list,
-            key = { task -> task.id }
-        ) { task ->
-            WellnessTaskItem(
-                taskName = task.label,
-                checked = task.checked,
-                onCheckedChange = { checked -> onCheckedTask(task, checked) },
-                onClose = { onCloseTask(task) }
-            )
-        }
-    }
-}
+import androidx.compose.runtime.remember
 
 @Composable
 fun WellnessTaskItem(
@@ -78,4 +41,31 @@ fun WellnessTaskItem(
         onClose = onClose,
         modifier = modifier,
     )
+}
+
+@Composable
+fun WellnessTaskItem(
+    taskName: String,
+    checked: Boolean,
+    onCheckedChange: (Boolean) -> Unit,
+    onClose: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        modifier = modifier, verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            modifier = Modifier
+                .weight(1f)
+                .padding(start = 16.dp),
+            text = taskName
+        )
+        Checkbox(
+            checked = checked,
+            onCheckedChange = onCheckedChange
+        )
+        IconButton(onClick = onClose) {
+            Icon(Icons.Filled.Close, contentDescription = "Close")
+        }
+    }
 }
